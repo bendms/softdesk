@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
+from authentication.serializers import UserSerializer
 from project.models import Project, Issue, Comment
 
 class ProjectSerializer(serializers.ModelSerializer):
-    
+    author_user_id = UserSerializer()
     class Meta:
         model = Project
-        fields = '__all__'
-        
+        fields = ['title', 'description', 'type', 'author_user_id']
 
 class IssueSerializer(serializers.ModelSerializer):
     

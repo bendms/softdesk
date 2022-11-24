@@ -11,6 +11,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     
+    # def get_queryset(self):
+        
+    
 class IssueViewSet(viewsets.ModelViewSet):
     
     queryset = Issue.objects.all()
