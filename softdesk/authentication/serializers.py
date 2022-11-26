@@ -1,7 +1,13 @@
-from authentication.models import CustomUser
+from authentication.models import CustomUser, Contributor
 from rest_framework import serializers
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'is_active'] 
+        fields = ['username'] 
+        
+class ContributorSerializer(serializers.HyperlinkedModelSerializer):
+    
+    class Meta:
+        model = Contributor
+        fields = ['user']

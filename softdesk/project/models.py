@@ -1,6 +1,6 @@
 from django.db import models
 
-from authentication.models import CustomUser
+from authentication.models import CustomUser, Contributor
 
 # Create your models here.
 
@@ -9,7 +9,11 @@ class Project(models.Model):
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=8192)
     type = models.CharField(max_length=128)
-    author_user_id = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE)
+    author_user_id = models.ForeignKey(
+        to=CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='author'
+    )
     
     def __str__(self):
         return self.title
