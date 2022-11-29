@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+
 # from authentication.models import CustomUser, Contributor
 
 # Create your models here.
@@ -17,6 +19,8 @@ from django.contrib.auth.models import User
     
 #     def __str__(self):
 #         return self.title
+
+
 
 class Project(models.Model):
     # user_id = models.IntegerField()
@@ -60,3 +64,17 @@ class Comment(models.Model):
         on_delete=models.CASCADE
     )
     created_time = models.DateTimeField(auto_now_add=True)
+    
+
+class Contributor(models.Model):
+
+    # user = models.ForeignKey(
+    #     to='User', on_delete=models.CASCADE, related_name='contributor'
+    # )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    permission = models.CharField(max_length=128)
+    role = models.CharField(max_length=128)
+    
+    class Meta:
+        unique_together = ("user", "project")

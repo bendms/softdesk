@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Project, Issue, Comment
-from authentication.models import Contributor
+from .models import Project, Issue, Comment, Contributor
+
 # Register your models here.
 
 admin.site.register(Project)

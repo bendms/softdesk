@@ -1,7 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.conf import settings
-from project.models import Project
+# from django.db import models
+# from django.contrib.auth.models import User
+# from django.conf import settings
+# from project.models import Project
 
 # from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
@@ -61,15 +61,3 @@ from project.models import Project
 #     )
 #     permission = models.ChoiceField
 #     role = models.CharField(max_length=128)
-class Contributor(models.Model):
-
-    # user = models.ForeignKey(
-    #     to='User', on_delete=models.CASCADE, related_name='contributor'
-    # )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=128)
-    role = models.CharField(max_length=128)
-    
-    # class Meta:
-    #     unique_together = ("user", "project")
