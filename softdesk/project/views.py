@@ -4,7 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from project.models import Project, Issue, Comment, Contributor
-from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
+from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer, ContributorSerializer
 
 # Create your views here.
 
@@ -45,3 +45,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    
+class ContributorViewSet(viewsets.ModelViewSet):
+
+    queryset = Contributor.objects.all()
+    serializer_class = ContributorSerializer    
+    

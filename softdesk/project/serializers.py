@@ -21,7 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
         
-class ContributorSerializer(serializers.HyperlinkedModelSerializer):
+class ContributorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Contributor

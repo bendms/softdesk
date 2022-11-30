@@ -76,5 +76,5 @@ class Contributor(models.Model):
     permission = models.CharField(max_length=128)
     role = models.CharField(max_length=128)
     
-    class Meta:
-        unique_together = ("user", "project")
+    # class Meta:
+    #     unique_together = ("user", "project")
