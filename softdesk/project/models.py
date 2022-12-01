@@ -23,10 +23,21 @@ from django.contrib.auth.models import User
 
 
 class Project(models.Model):
+    BACK_END = 'BACK_END'
+    FRONT_END = 'FRONT_END'
+    IOS = 'IOS'
+    ANDROID = 'ANDROID'
+    
+    TYPE_CHOICES = [
+        (BACK_END, 'Back-end'),
+        (FRONT_END, 'Front-end'),
+        (IOS, 'iOS'),
+        (ANDROID, 'Android')
+    ]
     # user_id = models.IntegerField()
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=8192)
-    type = models.CharField(max_length=128)
+    type = models.CharField(max_length=128, choices=TYPE_CHOICES)
     author_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
@@ -48,9 +59,9 @@ class Issue(models.Model):
     HIGH = 'HIGH'
     
     PRIORITY_CHOICES = [
-        (LOW, 'Basse'),
+        (LOW, 'Faible'),
         (MEDIUM, 'Moyenne'),
-        (HIGH, 'Haute')
+        (HIGH, 'Élevée')
     ]
     
     NOT_STARTED = 'NOT_STARTED'
@@ -98,7 +109,7 @@ class Comment(models.Model):
 class Contributor(models.Model):
     AUTHOR = 'AUTHOR'
     CONTRIBUTOR = 'CONTRIBUTOR'
-    CHOICES = [
+    CONTRIBUTOR_CHOICES = [
         (AUTHOR, 'Auteur'), 
         (CONTRIBUTOR, 'Contributeur')
         ]
@@ -108,7 +119,7 @@ class Contributor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     permission = models.CharField(max_length=128)
-    role = models.CharField(max_length=128, choices=CHOICES, blank=False)
+    role = models.CharField(max_length=128, choices=CONTRIBUTOR_CHOICES)
     
     # class Meta:
     #     unique_together = ("user", "project")
