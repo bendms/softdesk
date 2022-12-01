@@ -33,13 +33,42 @@ class Project(models.Model):
         return self.title
 
 class Issue(models.Model):
+    BUG = 'BUG'
+    TASK = 'TÂCHE'
+    IMPROVEMENT = 'IMPROVEMENT'
+    
+    TAG_CHOICES = [
+        (BUG, 'Bug'),
+        (TASK, 'Tâche'),
+        (IMPROVEMENT, 'Amélioration')
+    ]
+    
+    LOW = 'LOW'
+    MEDIUM = 'MEDIUM'
+    HIGH = 'HIGH'
+    
+    PRIORITY_CHOICES = [
+        (LOW, 'Basse'),
+        (MEDIUM, 'Moyenne'),
+        (HIGH, 'Haute')
+    ]
+    
+    NOT_STARTED = 'NOT_STARTED'
+    IN_PROGRESS = 'IN_PROGRESS'
+    COMPLETED = 'COMPLETED'
+    
+    STATUS_CHOICES = [
+        (NOT_STARTED, 'À Faire'),
+        (IN_PROGRESS, 'En cours'),
+        (COMPLETED, 'Terminé')
+    ]
     # project_id = models.IntegerField()
     title = models.CharField(max_length=128)
     desc = models.CharField(max_length=8192)
-    tag = models.CharField(max_length=128)
-    priority = models.CharField(max_length=128)
+    tag = models.CharField(max_length=128, choices=TAG_CHOICES, blank=False)
+    priority = models.CharField(max_length=128, choices=PRIORITY_CHOICES, blank=False)
     project_id = models.IntegerField()
-    status = models.CharField(max_length=128)
+    status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=False)
     author_user_id = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
@@ -67,14 +96,19 @@ class Comment(models.Model):
     
 
 class Contributor(models.Model):
-
+    AUTHOR = 'AUTHOR'
+    CONTRIBUTOR = 'CONTRIBUTOR'
+    CHOICES = [
+        (AUTHOR, 'Auteur'), 
+        (CONTRIBUTOR, 'Contributeur')
+        ]
     # user = models.ForeignKey(
     #     to='User', on_delete=models.CASCADE, related_name='contributor'
     # )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     permission = models.CharField(max_length=128)
-    role = models.CharField(max_length=128)
+    role = models.CharField(max_length=128, choices=CHOICES, blank=False)
     
     # class Meta:
     #     unique_together = ("user", "project")
