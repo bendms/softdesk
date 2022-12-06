@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from project.models import Project, Issue, Comment, Contributor
 from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer, ContributorSerializer
-from .permissions import IsAdminAuthenticated, IsContributorAuthenticated
+from .permissions import IsAdminAuthenticated, IsContributorAuthenticated, IsContributorOfProjectAuthenticated, IsAuthorAuthenticated
 
 # Create your views here.
 
@@ -35,12 +35,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         print("HEADERS", headers)
         print("Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)", Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers))
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        
+
     
+        
 class IssueViewSet(viewsets.ModelViewSet):
     
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
+    
+    permission_classes = [IsContributorOfProjectAuthenticated]
     
 class CommentViewSet(viewsets.ModelViewSet):
     
