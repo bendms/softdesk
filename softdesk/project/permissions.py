@@ -58,6 +58,11 @@ class IsAuthorAuthenticated(BasePermission):
         print('CONTRIBUTOR_INSTANCE_ROLE = AUTHOR_DOES_NOT_EXIST')
         return False
     
+class IsAuthorIssue(BasePermission):
+    pass
+
+class IsAuthorComment(BasePermission):
+    pass
     
 class MaPermission(BasePermission):
     message = "..."
