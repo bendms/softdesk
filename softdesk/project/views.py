@@ -103,6 +103,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
+    def create(self, request, *args, **kwargs):
+        "Create comment with author_user_id is user"
+        print("You are here : CommentViewSet.create")
+        data_copy = request.data.copy()
+        "Copy data to data_copy because request.data is immutable"
+        data_copy['author_user_id'] = request.user.id
+        serializer = CommentSerializer(data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 class ContributorViewSet(viewsets.ModelViewSet):
 
     queryset = Contributor.objects.all()
