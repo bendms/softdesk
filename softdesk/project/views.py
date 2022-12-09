@@ -122,6 +122,15 @@ class ContributorViewSet(viewsets.ModelViewSet):
         serializer_class = ContributorSerializer(contributor)
         headers = self.get_success_headers(serializer_class.data)    
         return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
-    
+
     def create(self, request, *args, **kwargs):
-        pass
+        data_copy = request.data.copy()
+        print("Data copy : ", data_copy)
+        new_contributor = User.objects.filter(username=data_copy['user'])
+        data_copy['user'] = new_contributor[0].id
+        print("Data copy : ", data_copy)
+        serializer = ContributorSerializer(data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
