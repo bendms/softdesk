@@ -37,22 +37,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer_class.data)
         
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        "Create project with author_user_id is user and add contributor in contributor table with role = AUTHOR"
+        print("You are here : ProjectViewSet.create")
+        data_copy = request.data.copy()
+        data_copy['author_user_id'] = request.user.id
+        serializer = ProjectSerializer(data=data_copy)
         serializer.is_valid(raise_exception=True)
-        print("SERIALIZER", serializer)
         self.perform_create(serializer)
-        project = Project.objects.get(title=request.POST["title"])
-        user_id = request.user.id
-        print("USER", user_id)
-        print("PROJECT", project.id)
-        print("SELF.PERFORM_CREATE(SERIALIZER)", self.perform_create(serializer))
-        contributor_instance = Contributor.objects.create(user=request.user, project=project, role=Contributor.AUTHOR)
-        print("CONTRIBUTOR_INSTANCE", contributor_instance)
+        project_instance = Project.objects.get(id=serializer.data['id'])
+        Contributor.objects.create(user=request.user, project=project_instance, role="AUTHOR")
         headers = self.get_success_headers(serializer.data)
-        print("HEADERS", headers)
-        print("Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)", Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers))
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
         
 class IssueViewSet(viewsets.ModelViewSet):
     
@@ -73,6 +68,22 @@ class IssueViewSet(viewsets.ModelViewSet):
         serializer = IssueSerializer(issues)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+    
+    def create(self, request, *args, **kwargs):
+        "Create issue with author_user_id is user"
+        print("You are here : IssueViewSet.create")
+        data_copy = request.data.copy()
+        "Copy data to data_copy because request.data is immutable"
+        data_copy['author_user_id'] = request.user.id
+        "Get id of assigned_user from username"
+        assigned_user = User.objects.filter(username=data_copy['assigned_user_id'])
+        assigned_user_id = assigned_user[0].id
+        data_copy['assigned_user_id'] =  assigned_user_id
+        serializer = IssueSerializer(data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
        
 class CommentViewSet(viewsets.ModelViewSet):
     
@@ -111,3 +122,6 @@ class ContributorViewSet(viewsets.ModelViewSet):
         serializer_class = ContributorSerializer(contributor)
         headers = self.get_success_headers(serializer_class.data)    
         return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
+    
+    def create(self, request, *args, **kwargs):
+        pass

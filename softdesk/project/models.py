@@ -38,7 +38,7 @@ class Project(models.Model):
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=8192)
     type = models.CharField(max_length=128, choices=TYPE_CHOICES)
-    author_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    author_user_id = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     
     def __str__(self):
         return self.title

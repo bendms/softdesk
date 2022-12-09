@@ -7,7 +7,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     # author_user_id = UserSerializer()
     class Meta:
         model = Project
-        fields = ['title', 'description', 'type', 'author_user_id']
+        fields = '__all__'
 
 class IssueSerializer(serializers.ModelSerializer):
     
