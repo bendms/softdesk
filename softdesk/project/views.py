@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from project.models import Project, Issue, Comment, Contributor
 from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer, ContributorSerializer
 # from .permissions import IsAdminAuthenticated, IsContributorAuthenticated, IsContributorOfProjectAuthenticated, IsAuthorAuthenticated
-from .permissions import IsAuthorOfProject
+from .permissions import IsAuthorOfProject, IsContributorOfProject, IsAuthorOfComment, IsAuthorOfIssue
 # Create your views here.
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -15,10 +16,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = [IsAuthorOfProject]
     # permission_classes = [IsContributorAuthenticated]
     # def get_queryset(self):
     
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthorOfProject | IsContributorOfProject])
     def list(self, request):
         "Return projects where user is contributor in contributor table"
         print("You are here : ProjectViewSet.list")
@@ -28,7 +29,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer_class = ProjectSerializer(queryset, many=True)
         return Response(serializer_class.data)
     
-
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthorOfProject | IsContributorOfProject])
     def retrieve(self, request, pk=None):
         "Return project where user is contributor in contributor table"
         print("You are here : ProjectViewSet.retrieve")
@@ -36,7 +37,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         queryset = Project.objects.filter(contributor__user=contributor, id=pk)
         serializer_class = ProjectSerializer(queryset, many=True)
         return Response(serializer_class.data)
-        
+    
     def create(self, request, *args, **kwargs):
         "Create project with author_user_id is user and add contributor in contributor table with role = AUTHOR"
         print("You are here : ProjectViewSet.create")
@@ -49,11 +50,34 @@ class ProjectViewSet(viewsets.ModelViewSet):
         Contributor.objects.create(user=request.user, project=project_instance, role="AUTHOR")
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthorOfProject])
+    def update(self, request, pk=None, *args, **kwargs):
+        "Update project with author_user_id is user"
+        print("You are here : ProjectViewSet.update")
+        data_copy = request.data.copy()
+        data_copy['author_user_id'] = request.user.id
+        queryset = Project.objects.filter(id=pk)
+        project = get_object_or_404(queryset, id=pk)
+        serializer = ProjectSerializer(project, data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
         
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthorOfProject])
+    def destroy(self, request, pk=None, *args, **kwargs):
+        "Delete project with author_user_id is user"
+        print("You are here : ProjectViewSet.destroy")
+        queryset = Project.objects.filter(id=pk)
+        project = get_object_or_404(queryset, id=pk)
+        self.perform_destroy(project)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 class IssueViewSet(viewsets.ModelViewSet):
     
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
+    permission_classes = [IsAuthorOfProject]
     
     # permission_classes = [IsContributorOfProjectAuthenticated]
     
@@ -119,7 +143,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ModelViewSet):
 
     queryset = Contributor.objects.all()
-    serializer_class = ContributorSerializer    
+    serializer_class = ContributorSerializer
+    permission_classes = [IsAuthorOfProject]  
     
     def list(self, request, projects_pk=None):
         "Return contributors where user is contributor in contributor table"
