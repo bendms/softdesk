@@ -64,6 +64,9 @@ from .models import Project, Contributor, Comment, Issue
 # class IsAuthorComment(BasePermission):
 #     pass
 
+class IsAuthenticated(BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)
 class IsAuthorOfProject(BasePermission):
     def has_permission(self, request, view):
         if request.method == 'GET' or request.method == 'PUT' or request.method == 'DELETE':

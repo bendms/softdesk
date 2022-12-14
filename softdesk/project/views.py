@@ -1,25 +1,21 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
 from project.models import Project, Issue, Comment, Contributor
 from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer, ContributorSerializer
 # from .permissions import IsAdminAuthenticated, IsContributorAuthenticated, IsContributorOfProjectAuthenticated, IsAuthorAuthenticated
-from .permissions import IsAuthorOfProject, IsContributorOfProject, IsAuthorOfComment, IsAuthorOfIssue
+from .permissions import IsAuthorOfProject, IsContributorOfProject, IsAuthorOfComment, IsAuthorOfIssue, IsAuthenticated
 # Create your views here.
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    # user = User.objects.get(id=request.user.id)
-    # Contributor.objects.create(user=user, project=Project.objects.get())
-
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    # permission_classes = [IsContributorAuthenticated]
-    # def get_queryset(self):
+
     
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthorOfProject | IsContributorOfProject])
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def list(self, request):
         "Return projects where user is contributor in contributor table"
         print("You are here : ProjectViewSet.list")
@@ -29,7 +25,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer_class = ProjectSerializer(queryset, many=True)
         return Response(serializer_class.data)
     
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthorOfProject | IsContributorOfProject])
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def retrieve(self, request, pk=None):
         "Return project where user is contributor in contributor table"
         print("You are here : ProjectViewSet.retrieve")
@@ -38,6 +34,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer_class = ProjectSerializer(queryset, many=True)
         return Response(serializer_class.data)
     
+    @permission_classes([IsAuthenticated])
     def create(self, request, *args, **kwargs):
         "Create project with author_user_id is user and add contributor in contributor table with role = AUTHOR"
         print("You are here : ProjectViewSet.create")
@@ -47,11 +44,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         project_instance = Project.objects.get(id=serializer.data['id'])
-        Contributor.objects.create(user=request.user, project=project_instance, role="AUTHOR")
+        Contributor.objects.create(user=request.user, project=project_instance, role="AUTHOR", permission="ADMIN")
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthorOfProject])
+    @permission_classes([IsAuthorOfProject])
     def update(self, request, pk=None, *args, **kwargs):
         "Update project with author_user_id is user"
         print("You are here : ProjectViewSet.update")
@@ -65,7 +62,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
         
-    @action(detail=True, methods=['delete'], permission_classes=[IsAuthorOfProject])
+    @permission_classes([IsAuthorOfProject])
     def destroy(self, request, pk=None, *args, **kwargs):
         "Delete project with author_user_id is user"
         print("You are here : ProjectViewSet.destroy")
@@ -77,15 +74,14 @@ class IssueViewSet(viewsets.ModelViewSet):
     
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [IsAuthorOfProject]
-    
-    # permission_classes = [IsContributorOfProjectAuthenticated]
-    
+   
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def list(self, request, projects_pk=None):
         queryset = Issue.objects.filter(project_id=projects_pk)
         serializer = IssueSerializer(queryset, many=True)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+
 
     def retrieve(self, request, pk=None, projects_pk=None):
         queryset = Issue.objects.filter(pk=pk, project_id=projects_pk)
@@ -94,6 +90,7 @@ class IssueViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def create(self, request, *args, **kwargs):
         "Create issue with author_user_id is user"
         print("You are here : IssueViewSet.create")
@@ -109,18 +106,48 @@ class IssueViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    @permission_classes([IsAuthorOfIssue])
+    def update(self, request, pk=None, *args, **kwargs):
+        "Update issue with author_user_id is user"
+        print("You are here : IssueViewSet.update")
+        data_copy = request.data.copy()
+        "Copy data to data_copy because request.data is immutable"
+        data_copy['author_user_id'] = request.user.id
+        "Get id of assigned_user from username"
+        assigned_user = User.objects.filter(username=data_copy['assigned_user_id'])
+        assigned_user_id = assigned_user[0].id
+        data_copy['assigned_user_id'] =  assigned_user_id
+        queryset = Issue.objects.filter(pk=pk)
+        issue = get_object_or_404(queryset, pk=pk)
+        serializer = IssueSerializer(issue, data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+    
+    @permission_classes([IsAuthorOfIssue])
+    def delete(self, request, pk=None, *args, **kwargs):
+        "Delete issue with author_user_id is user"
+        print("You are here : IssueViewSet.delete")
+        queryset = Issue.objects.filter(pk=pk)
+        issue = get_object_or_404(queryset, pk=pk)
+        self.perform_destroy(issue)
+        return Response(status=status.HTTP_204_NO_CONTENT)
        
 class CommentViewSet(viewsets.ModelViewSet):
     
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def list(self, request, projects_pk=None, issues_pk=None):
         queryset = Comment.objects.filter(issue_id=issues_pk)
         serializer = CommentSerializer(queryset, many=True)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject | IsAuthorOfComment])
     def retrieve(self, request, pk=None, projects_pk=None, issues_pk=None):
         queryset = Comment.objects.filter(issue_id=issues_pk, pk=pk)
         comment = get_object_or_404(queryset, pk=pk)
@@ -128,6 +155,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def create(self, request, *args, **kwargs):
         "Create comment with author_user_id is user"
         print("You are here : CommentViewSet.create")
@@ -140,18 +168,42 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
+    @permission_classes([IsAuthorOfComment])
+    def update(self, request, pk=None, *args, **kwargs):
+        "Update comment with author_user_id is user"
+        print("You are here : CommentViewSet.update")
+        data_copy = request.data.copy()
+        "Copy data to data_copy because request.data is immutable"
+        data_copy['author_user_id'] = request.user.id
+        queryset = Comment.objects.filter(pk=pk)
+        comment = get_object_or_404(queryset, pk=pk)
+        serializer = CommentSerializer(comment, data=data_copy)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+    
+    def delete(self, request, pk=None, *args, **kwargs):
+        "Delete comment with author_user_id is user"
+        print("You are here : CommentViewSet.delete")
+        queryset = Comment.objects.filter(pk=pk)
+        comment = get_object_or_404(queryset, pk=pk)
+        self.perform_destroy(comment)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 class ContributorViewSet(viewsets.ModelViewSet):
 
     queryset = Contributor.objects.all()
     serializer_class = ContributorSerializer
-    permission_classes = [IsAuthorOfProject]  
     
+    @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def list(self, request, projects_pk=None):
         "Return contributors where user is contributor in contributor table"
         queryset = Contributor.objects.filter(project_id=projects_pk)
         serializer_class = ContributorSerializer(queryset, many=True)
         headers = self.get_success_headers(serializer_class.data)    
         return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
+    
     
     def retrieve(self, request, pk=None, projects_pk=None):
         "Return contributor where user is contributor in contributor table"
@@ -161,6 +213,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer_class.data)    
         return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
 
+    @permission_classes([IsAuthorOfProject])
     def create(self, request, *args, **kwargs):
         data_copy = request.data.copy()
         print("Data copy : ", data_copy)
