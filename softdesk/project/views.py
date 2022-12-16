@@ -6,10 +6,7 @@ from rest_framework.response import Response
 
 from project.models import Project, Issue, Comment, Contributor
 from project.serializers import ProjectSerializer, IssueSerializer, CommentSerializer, ContributorSerializer
-# from .permissions import IsAdminAuthenticated, IsContributorAuthenticated, IsContributorOfProjectAuthenticated, IsAuthorAuthenticated
 from .permissions import IsAuthorOfProject, IsContributorOfProject, IsAuthorOfComment, IsAuthorOfIssue, IsAuthenticated
-# Create your views here.
-
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer

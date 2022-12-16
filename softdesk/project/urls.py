@@ -1,9 +1,6 @@
-# from rest_framework import routers
-from django.urls import include, path
 from rest_framework_nested import routers
 
 from project.views import ProjectViewSet, IssueViewSet, CommentViewSet, ContributorViewSet
-from authentication.views import UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -23,9 +20,3 @@ issues_router = routers.NestedSimpleRouter(projects_router, r'issues', lookup='i
 issues_router.register(r'comments', CommentViewSet, basename='comments')
 # /projects/{pk}/issues/{pk}/comments/
 # /projects/{pk}/issues/{pk}/comments/{pk}/
-
-# router.register('issues', IssueViewSet)
-# router.register('comments', CommentViewSet)
-# router.register('', UserViewSet)
-
-#TODO: implémenter nested-router pour les URLS imbriquées
