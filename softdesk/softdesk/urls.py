@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from authentication.views import UserViewSet, RegisterViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+
 from project.urls import router, projects_router, issues_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('signup/', RegisterViewSet.as_view({'post': 'create'})),
     path('', include(router.urls)),
     path(r'', include(projects_router.urls)),
     path(r'', include(issues_router.urls)),

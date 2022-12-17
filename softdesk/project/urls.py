@@ -1,5 +1,6 @@
 from rest_framework_nested import routers
 
+from authentication.views import RegisterViewSet
 from project.views import ProjectViewSet, IssueViewSet, CommentViewSet, ContributorViewSet
 
 router = routers.DefaultRouter()

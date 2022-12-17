@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.contrib.auth.models import User
 from authentication.serializers import UserSerializer
 from project.models import Project, Issue, Comment, Contributor
 
@@ -25,4 +25,5 @@ class ContributorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Contributor
-        fields = "__all__"
+        fields = '__all__'
+        
