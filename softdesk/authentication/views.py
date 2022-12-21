@@ -16,11 +16,24 @@ class RegisterViewSet(viewsets.ModelViewSet):
     
     serializer_class = UserSerializer
     
+    # def create(self, request, *args, **kwargs):
+    #     serializer = UserSerializer(data=request.data, context={'request': request})
+    #     print("DATA: ", request.data)
+    #     print("SERIALIZER: ", serializer)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+        
+    #     # user = self.perform_create(serializer)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     def create(self, request, *args, **kwargs):
-        serializer = UserSerializer(data=request.data, context={'request':request})
-        print("DATA: ", request.data)
-        print("SERIALIZER: ", serializer)
-        serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        print("REQUEST_DATA: ", request.data)
+        if User.objects.filter(username=request.data['username']).exists():
+            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user = User.objects.create_user(username=request.data['username'], password=request.data['password'], last_name=request.data['last_name'], first_name=request.data['first_name'], email=request.data['email'])
+            serializer = UserSerializer(user, data=request.data, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            headers = self.get_success_headers(serializer.data)
+            user.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

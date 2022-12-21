@@ -8,7 +8,8 @@ from rest_framework import serializers
 #         model = CustomUser
 #         fields = ['username'] 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
         fields = "__all__"

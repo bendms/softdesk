@@ -20,7 +20,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         contributor = request.user
         queryset = Project.objects.filter(contributor__user=contributor)
         serializer_class = ProjectSerializer(queryset, many=True)
-        return Response(serializer_class.data)
+        headers = self.get_success_headers(serializer_class.data)
+        return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
     
     @permission_classes([IsAuthorOfProject | IsContributorOfProject])
     def retrieve(self, request, pk=None):
@@ -29,7 +30,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         contributor = request.user
         queryset = Project.objects.filter(contributor__user=contributor, id=pk)
         serializer_class = ProjectSerializer(queryset, many=True)
-        return Response(serializer_class.data)
+        headers = self.get_success_headers(serializer_class.data)
+        return Response(serializer_class.data, status=status.HTTP_200_OK, headers=headers)
     
     @permission_classes([IsAuthenticated])
     def create(self, request, *args, **kwargs):
@@ -124,7 +126,7 @@ class IssueViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
     @permission_classes([IsAuthorOfIssue])
-    def delete(self, request, pk=None, *args, **kwargs):
+    def destroy(self, request, pk=None, *args, **kwargs):
         "Delete issue with author_user_id is user"
         print("You are here : IssueViewSet.delete")
         queryset = Issue.objects.filter(pk=pk)
@@ -180,7 +182,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
     
-    def delete(self, request, pk=None, *args, **kwargs):
+    def destroy(self, request, pk=None, *args, **kwargs):
         "Delete comment with author_user_id is user"
         print("You are here : CommentViewSet.delete")
         queryset = Comment.objects.filter(pk=pk)
@@ -222,3 +224,11 @@ class ContributorViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    @permission_classes([IsAuthorOfProject])
+    def destroy(self, request, pk=None, projects_pk=None):
+        queryset = Contributor.objects.filter(project_id=projects_pk, user_id=pk)
+        contributor_to_destroy = get_object_or_404(queryset)
+        self.perform_destroy(contributor_to_destroy)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
