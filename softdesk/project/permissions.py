@@ -6,6 +6,7 @@ class IsAuthenticated(BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)
 class IsAuthorOfProject(BasePermission):
+    print("You are here : IsAuthorOfProject")
     def has_permission(self, request, view):
         if request.method == 'GET' or request.method == 'PUT' or request.method == 'DELETE':
             user = request.user
@@ -20,9 +21,11 @@ class IsAuthorOfProject(BasePermission):
             try:
                 contributor_instance = Contributor.objects.get(user_id=user.id, project_id=project_id)
                 if contributor_instance.role == 'AUTHOR':
+                    print('PERMISSION GRANTED')
                     return True
             except:
                 print('Contributor_instance does not exist')
+                print('PERMISSION DENIED')
                 return False
         elif request.method == 'POST':
             return True
@@ -42,11 +45,14 @@ class IsContributorOfProject(BasePermission):
             try:
                 contributor_instance = Contributor.objects.get(user_id=user.id, project_id=project_id)
                 if contributor_instance.role == 'CONTRIBUTOR':
+                    print('PERMISSION GRANTED')
                     return True
             except:
                 print('Contributor_instance does not exist')
+                print('PERMISSION DENIED')
                 return False
         elif request.method == 'POST':
+            print('PERMISSION GRANTED')
             return True
     
 class IsAuthorOfIssue(BasePermission):
@@ -65,11 +71,14 @@ class IsAuthorOfIssue(BasePermission):
                 issue_instance = Issue.objects.get(id=issue_id)
                 print('ISSUE_INSTANCE', issue_instance)
                 if issue_instance.author_user_id == user.id:
+                    print('PERMISSION GRANTED')
                     return True
             except:
                 print('Issue_instance does not exist')
+                print('PERMISSION DENIED')
                 return False
         elif request.method == 'POST':
+            print('PERMISSION GRANTED')
             return True
         
 class IsAuthorOfComment(BasePermission):
@@ -88,11 +97,14 @@ class IsAuthorOfComment(BasePermission):
                 comment_instance = Comment.objects.get(id=comment_id)
                 print('COMMENT_INSTANCE', comment_instance)
                 if comment_instance.author_user_id == user.id:
+                    print('PERMISSION GRANTED')
                     return True
             except:
                 print('Comment_instance does not exist')
+                print('PERMISSION DENIED')
                 return False
         elif request.method == 'POST':
+            print('PERMISSION GRANTED')
             return True
             
 # class MaPermission(BasePermission):
