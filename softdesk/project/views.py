@@ -96,7 +96,7 @@ class IssueViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthorOfProject | IsContributorOfProject]
             return [permission() for permission in permission_classes]
         elif self.action == 'update' or self.action == 'partial_update' or self.action == 'destroy':
-            permission_classes = [IsAuthorOfProject]
+            permission_classes = [IsAuthorOfIssue]
             return [permission() for permission in permission_classes]
    
 
