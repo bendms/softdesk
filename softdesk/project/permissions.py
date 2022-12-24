@@ -8,18 +8,22 @@ class IsAuthenticated(BasePermission):
 class IsAuthorOfProject(BasePermission):
     print("You are here : IsAuthorOfProject")
     def has_permission(self, request, view):
+        print('You are here : IsAuthorOfProject.has_permission')
         if request.method == 'GET' or request.method == 'PUT' or request.method == 'DELETE':
             user = request.user
             print('USER', user)
             print("VIEW.KWARGS", view.kwargs)
+            print("USER_ID", user.id)
             try:
-                project_id = view.kwargs['pk']
+                project_id = view.kwargs['projects_pk']
                 print('PROJECT_ID', project_id)
             except:
-                project_id = view.kwargs['projects_pk']
+                project_id = view.kwargs['pk']
                 print('PROJECT_ID', project_id)
             try:
                 contributor_instance = Contributor.objects.get(user_id=user.id, project_id=project_id)
+                print('======== CONTRIBUTOR_INSTANCE ========', contributor_instance)
+                print()
                 if contributor_instance.role == 'AUTHOR':
                     print('PERMISSION GRANTED')
                     return True
@@ -32,15 +36,16 @@ class IsAuthorOfProject(BasePermission):
     
 class IsContributorOfProject(BasePermission):
     def has_permission(self, request, view):
+        print("You are here : IsContributorOfProject")
         if request.method == 'GET' or request.method == 'PUT' or request.method == 'DELETE':
             user = request.user
             print('USER', user)
             print("VIEW.KWARGS", view.kwargs)
             try:
-                project_id = view.kwargs['pk']
+                project_id = view.kwargs['projects_pk']
                 print('PROJECT_ID', project_id)
             except:
-                project_id = view.kwargs['projects_pk']
+                project_id = view.kwargs['pk']
                 print('PROJECT_ID', project_id)
             try:
                 contributor_instance = Contributor.objects.get(user_id=user.id, project_id=project_id)
@@ -57,6 +62,7 @@ class IsContributorOfProject(BasePermission):
     
 class IsAuthorOfIssue(BasePermission):
     def has_permission(self, request, view):
+        print("You are here : IsAuthorOfIssue")
         if request.method == 'GET' or request.method == 'PUT' or request.method == 'DELETE':
             user = request.user
             print('USER', user)
@@ -70,7 +76,9 @@ class IsAuthorOfIssue(BasePermission):
             try:
                 issue_instance = Issue.objects.get(id=issue_id)
                 print('ISSUE_INSTANCE', issue_instance)
-                if issue_instance.author_user_id == user.id:
+                print('ISSUE_INSTANCE.AUTHOR_USER_ID', issue_instance.author_user_id)
+                print(bool(issue_instance.author_user_id == user))
+                if issue_instance.author_user_id == user:
                     print('PERMISSION GRANTED')
                     return True
             except:
@@ -96,7 +104,7 @@ class IsAuthorOfComment(BasePermission):
             try:
                 comment_instance = Comment.objects.get(id=comment_id)
                 print('COMMENT_INSTANCE', comment_instance)
-                if comment_instance.author_user_id == user.id:
+                if comment_instance.author_user_id == user:
                     print('PERMISSION GRANTED')
                     return True
             except:
