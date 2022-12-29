@@ -16,7 +16,7 @@ I will be using Django Rest Framework to create this API.
 
 On the app you will be able to create your own account and create your projects, issues and comments.
 
-You can find full documentation via Postman link : https://documenter.getpostman.com/view/23127724/2s8Z6u3uCw
+You can find full documentation via Postman link : https://documenter.getpostman.com/view/23127724/2s8Z6yWYPu
 
 This app follows OWASP security recommandations.
 
