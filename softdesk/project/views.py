@@ -42,9 +42,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         contributor = request.user
         print("CONTRIBUTOR", contributor)
         print("PK", pk)
-        # project = get_object_or_404(Project, id=pk)
         queryset = Project.objects.filter(contributor__user=contributor, id=pk)
-        # queryset = Project.objects.filter(id=pk)
         print("QUERYSET", queryset)
         serializer_class = ProjectSerializer(queryset, many=True)
         print("SERIALIZER", serializer_class)
@@ -70,7 +68,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         print("You are here : ProjectViewSet.update")
         print("REQUEST", request.data)
         data_copy = request.data.copy()
-        # data_copy['author_user_id'] = request.user.id
         queryset = Project.objects.filter(id=pk)
         project = get_object_or_404(queryset, id=pk)
         serializer = ProjectSerializer(project, data=data_copy)

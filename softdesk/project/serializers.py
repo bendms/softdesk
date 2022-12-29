@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from authentication.serializers import UserSerializer
+
 from project.models import Project, Issue, Comment, Contributor
 
 class ProjectSerializer(serializers.ModelSerializer):
-    # author_user_id = UserSerializer()
     class Meta:
         model = Project
         fields = '__all__'
