@@ -12,6 +12,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     
     def get_permissions(self):
+        """Return the list of permissions that this view requires."""
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
             return [permission() for permission in permission_classes]

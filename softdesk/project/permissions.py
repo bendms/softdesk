@@ -114,24 +114,3 @@ class IsAuthorOfComment(BasePermission):
         elif request.method == 'POST':
             print('PERMISSION GRANTED')
             return True
-            
-# class MaPermission(BasePermission):
-#     message = "..."
-#     def has_permission(self, request, view):
-#         if request.method in SAFE_METHODS:
-#             return bool(...)
-#         elif request.method == "POST":
-#             return bool(...) 
-#         elif request.method == "PUT" or request.method == "DELETE":
-#             return bool(...) #idem que ci dessous, sinon bloquant
-
-
-#     def has_object_permission(self, request, view, obj):
-#         if request.method in SAFE_METHODS:
-#             return bool(...)
-#         elif request.method == "POST":
-#             return False  # "Method \"POST\" not allowed." 
-#         elif request.method == "PUT" or request.method == "DELETE":
-#             return bool(...) #"ci dessous", c'est ici
-        
-        
