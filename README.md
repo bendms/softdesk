@@ -32,39 +32,33 @@ This script needs Python installed and some packages detailled in requirements.t
 
 ## Configuration 
 
-1. Go to litreview directory
-
-```
-  cd softdesk
-```
-
-2. Start virtual environment from the terminal : 
+1. Start virtual environment from the terminal : 
 ```
     source/env/bin/activate
 ```
 
-3. Install packages from requirements.txt
+2. Install packages from requirements.txt
 
 ```
   pip install -r requirements.txt
 ```
 
-4. Go to softdesk directory 
+3. Go to softdesk directory 
 
 ```
   cd softdesk
 ```
 
-5. Launch local server on your machine
+4. Launch local server on your machine
 
 ```
   python manage.py runserver
 ```
 
-6. Your URL will be https://127.0.0.1:8000/ 
+5. Your URL will be https://127.0.0.1:8000/ 
 
-7. Create your personnal account to access (see documentation)
+6. Create your personnal account to access (see documentation)
 
 ## How to contribute 
 
-This project is a MVP and specifications requests simple and minimal UI. Feel free to imagine a design and add CSS for it. It will be great to have some animations with JavaScript too. 
+Feel free to implement monitoring tool, interface and Throttling system.
