@@ -22,10 +22,10 @@ from project.urls import router, projects_router, issues_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('signup/', RegisterViewSet.as_view({'post': 'create'})),
-    path('', include(router.urls)),
-    path(r'', include(projects_router.urls)),
-    path(r'', include(issues_router.urls)),
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api-auth/', include('rest_framework.urls')),
+    path("signup/", RegisterViewSet.as_view({"post": "create"})),
+    path("", include(router.urls)),
+    path(r"", include(projects_router.urls)),
+    path(r"", include(issues_router.urls)),
+    path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api-auth/", include("rest_framework.urls")),
 ]

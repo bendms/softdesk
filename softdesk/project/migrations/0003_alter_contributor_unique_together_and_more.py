@@ -9,47 +9,80 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('project', '0002_alter_contributor_unique_together'),
+        ("project", "0002_alter_contributor_unique_together"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='contributor',
+            name="contributor",
             unique_together=set(),
         ),
         migrations.AlterField(
-            model_name='contributor',
-            name='permission',
+            model_name="contributor",
+            name="permission",
             field=models.CharField(blank=True, max_length=128, null=True),
         ),
         migrations.AlterField(
-            model_name='contributor',
-            name='role',
-            field=models.CharField(choices=[('AUTHOR', 'Auteur'), ('CONTRIBUTOR', 'Contributeur')], max_length=128),
+            model_name="contributor",
+            name="role",
+            field=models.CharField(
+                choices=[("AUTHOR", "Auteur"), ("CONTRIBUTOR", "Contributeur")],
+                max_length=128,
+            ),
         ),
         migrations.AlterField(
-            model_name='issue',
-            name='priority',
-            field=models.CharField(choices=[('LOW', 'Faible'), ('MEDIUM', 'Moyenne'), ('HIGH', 'Élevée')], max_length=128),
+            model_name="issue",
+            name="priority",
+            field=models.CharField(
+                choices=[("LOW", "Faible"), ("MEDIUM", "Moyenne"), ("HIGH", "Élevée")],
+                max_length=128,
+            ),
         ),
         migrations.AlterField(
-            model_name='issue',
-            name='status',
-            field=models.CharField(choices=[('NOT_STARTED', 'À Faire'), ('IN_PROGRESS', 'En cours'), ('COMPLETED', 'Terminé')], max_length=128),
+            model_name="issue",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("NOT_STARTED", "À Faire"),
+                    ("IN_PROGRESS", "En cours"),
+                    ("COMPLETED", "Terminé"),
+                ],
+                max_length=128,
+            ),
         ),
         migrations.AlterField(
-            model_name='issue',
-            name='tag',
-            field=models.CharField(choices=[('BUG', 'Bug'), ('TÂCHE', 'Tâche'), ('IMPROVEMENT', 'Amélioration')], max_length=128),
+            model_name="issue",
+            name="tag",
+            field=models.CharField(
+                choices=[
+                    ("BUG", "Bug"),
+                    ("TÂCHE", "Tâche"),
+                    ("IMPROVEMENT", "Amélioration"),
+                ],
+                max_length=128,
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='author_user_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="project",
+            name="author_user_id",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='type',
-            field=models.CharField(choices=[('BACK_END', 'Back-end'), ('FRONT_END', 'Front-end'), ('IOS', 'iOS'), ('ANDROID', 'Android')], max_length=128),
+            model_name="project",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("BACK_END", "Back-end"),
+                    ("FRONT_END", "Front-end"),
+                    ("IOS", "iOS"),
+                    ("ANDROID", "Android"),
+                ],
+                max_length=128,
+            ),
         ),
     ]
